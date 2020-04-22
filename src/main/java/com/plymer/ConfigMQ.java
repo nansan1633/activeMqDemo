@@ -7,8 +7,10 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
 import javax.jms.Topic;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -23,6 +25,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConfigMQ {
 	
+
+	@Value("${spring.activemq.broker-url}")
+	private String brokerUrl;
+	
 	@Bean
 	public Queue queue() {
 		return new ActiveMQQueue("sample.queue");
@@ -33,8 +39,24 @@ public class ConfigMQ {
         return new ActiveMQTopic("sample.topic");
     }
 	
+	
 	@Bean
-    public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ConnectionFactory activeMQConnectionFactory) {
+	public ActiveMQConnectionFactory connectionFactory() {
+		return new ActiveMQConnectionFactory(brokerUrl);
+	}
+	
+	
+	// Queue模式连接注入
+	@Bean
+	public JmsListenerContainerFactory<?> jmsListenerContainerQueue(ActiveMQConnectionFactory connectionFactory) {
+		DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
+		bean.setConnectionFactory(connectionFactory);
+		return bean;
+	}
+	
+	@Bean
+    public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ActiveMQConnectionFactory activeMQConnectionFactory) {
+		//public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ConnectionFactory activeMQConnectionFactory) {
         DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
         bean.setPubSubDomain(true);
         bean.setConnectionFactory(activeMQConnectionFactory);

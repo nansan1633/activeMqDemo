@@ -38,7 +38,7 @@ public class HelloController {
 	
 		long start,end;
 		start = System.currentTimeMillis();
-		for(int i=0;i<100;i++) {
+		for(int i=0;i<1;i++) {
 			topicConsumerService.sendTopic(i+"");
 		}
 		
@@ -55,7 +55,7 @@ public class HelloController {
 	public String queue(String name) {
 		long start,end;
 		start = System.currentTimeMillis();
-		for(int i=0;i<100;i++) {
+		for(int i=0;i<1;i++) {
 			topicConsumerService.sendQueue(i+"");
 		}
 		
